@@ -1,0 +1,10 @@
+cluster.name: pyestest
+node.name: "pyestest_1"
+
+index.number_of_shards: 1
+index.number_of_replicas: 0
+
+transport.tcp.port: 9322
+http.port: 9223
+
+discovery.zen.ping.multicast.enabled: false

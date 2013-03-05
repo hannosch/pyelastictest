@@ -1,0 +1,6 @@
+include *.rst
+include MANIFEST.in
+
+recursive-include pyelastictest *
+
+global-exclude *pyc *pyo
