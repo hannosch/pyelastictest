@@ -13,12 +13,12 @@ index.number_of_replicas: 0
 http.port: {port}
 transport.tcp.port: {tport}
 discovery.zen.ping.multicast.enabled: false
-discovery.zen.ping.unicast.hosts: {hosts}
-path.conf: {config_path}
-path.work: {working_path}
-path.plugins: {working_path}
-path.data: {data_path}
-path.logs: {log_path}
+discovery.zen.ping.unicast.hosts: "{hosts}"
+path.conf: "{config_path}"
+path.work: "{working_path}"
+path.plugins: "{working_path}"
+path.data: "{data_path}"
+path.logs: "{log_path}"
 """
 
 LOG_CONF = """\
@@ -29,17 +29,17 @@ logger:
 
 appender:
   console:
-    type: console
+    type: "console"
     layout:
-      type: consolePattern
+      type: "consolePattern"
       conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
 
   file:
     type: dailyRollingFile
-    file: ${path.logs}/${cluster.name}.log
+    file: "${path.logs}/${cluster.name}.log"
     datePattern: "'.'yyyy-MM-dd"
     layout:
-      type: pattern
+      type: "pattern"
       conversionPattern: "[%d{ISO8601}][%-5p][%-25c] %m%n"
 """
 
