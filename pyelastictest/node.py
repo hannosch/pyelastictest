@@ -49,11 +49,12 @@ class Node(object):
     directory and part of a cluster.
     """
 
-    def __init__(self, cluster, name, port):
+    def __init__(self, cluster, name, port, trans_port):
         self.cluster = cluster
         self.working_path = tempfile.mkdtemp(dir=cluster.working_path)
         self.name = name
         self.port = port
+        self.trans_port = trans_port
         self.address = 'http://localhost:' + str(port)
         self.running = False
         self.process = None
@@ -83,7 +84,7 @@ class Node(object):
                 cluster_name=self.cluster.name,
                 node_name=self.name,
                 port=self.port,
-                tport=self.port + 1,
+                tport=self.trans_port,
                 hosts=','.join(self.cluster.hosts),
                 working_path=self.working_path,
                 config_path=config_path,

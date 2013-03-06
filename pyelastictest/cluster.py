@@ -2,6 +2,7 @@ import atexit
 import os
 import random
 import shutil
+import socket
 import tempfile
 import time
 import uuid
@@ -29,9 +30,24 @@ def get_cluster():
     return CLUSTER
 
 
+def get_free_port(retry=10):
+    sock = None
+    for i in range(retry):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            sock.bind(('localhost', 0))
+        except socket.error:
+            sock.close()
+        else:
+            break
+    port = sock.getsockname()[1]
+    sock.close()
+    return port
+
+
 class Cluster(object):
 
-    def __init__(self, install_path, size=1, port_base=19000):
+    def __init__(self, install_path, size=1):
         self.install_path = install_path
         self.size = size
         self.name = uuid.uuid4().hex
@@ -39,18 +55,18 @@ class Cluster(object):
         self.nodes = []
         self.client = None
         # configure cluster ports
-        self.port_base = port_base + random.randint(0, 90) * 10
         self.ports = []
-        port = self.port_base
+        self.trans_ports = []
         for i in range(size):
-            self.ports.append(port)
-            port += 10
-        self.hosts = ['localhost:' + str(p + 1) for p in self.ports]
+            self.ports.append(get_free_port())
+            self.trans_ports.append(get_free_port())
+        self.hosts = ['localhost:%s' % p for p in self.trans_ports]
 
     def start(self):
         for i in range(self.size):
             port = self.ports[i]
-            node = Node(self, '%s_%s' % (self.name, i), port)
+            trans_port = self.trans_ports[i]
+            node = Node(self, '%s_%s' % (self.name, i), port, trans_port)
             self.nodes.append(node)
             node.start()
 
