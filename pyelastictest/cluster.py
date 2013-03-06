@@ -64,6 +64,7 @@ class Cluster(object):
 
     def terminate(self):
         self.stop()
+        self.client = None
         shutil.rmtree(self.working_path, ignore_errors=True)
 
     def wait_until_ready(self):
