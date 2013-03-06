@@ -22,7 +22,7 @@ clean:
 	rm -rf $(BUILD_DIRS)
 
 test:
-	$(BIN)/nosetests -d -s -v --with-coverage pyelastictest.tests
+	$(BIN)/nosetests -d -s -v --with-coverage --cover-package pyelastictest pyelastictest
 
 html:
 	cd docs && \
