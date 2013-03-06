@@ -54,4 +54,15 @@ class TestCluster(TestCase):
         self.assertEqual(len(cluster), 3)
         self.assertEqual(len(cluster.hosts), 3)
         self.assertEqual(len(os.listdir(cluster.working_path)), 3)
-        self.assertEqual(cluster.client.health()['number_of_nodes'], 3)
+        client = cluster.client
+        self.assertEqual(client.health()['number_of_nodes'], 3)
+        # test if routing works and data is actually distributed across nodes
+        client.create_index('test_shards', settings={
+            'number_of_shards': 1,
+            'number_of_replicas': 2,
+        })
+        client.index('test_shards', 'spam', {'eggs': 'bacon'})
+        client.refresh('test_shards')
+        shard_info = client.status()['indices']['test_shards']['shards']['0']
+        nodes = set([s['routing']['node'] for s in shard_info])
+        self.assertEqual(len(nodes), 3)
