@@ -1,6 +1,5 @@
 import atexit
 import os
-import random
 import shutil
 import socket
 import tempfile

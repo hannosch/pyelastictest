@@ -5,7 +5,8 @@ pyelastictest
 pyelastictest provides a test harness for Python integration tests against a
 real ElasticSearch server.
 
-It uses pyelasticsearch internally as its client library.
+It uses `pyelasticsearch <http://pyelasticsearch.readthedocs.org>`_ as its
+client library.
 
 Reference Docs
 ==============
@@ -13,6 +14,7 @@ Reference Docs
 .. toctree::
    :maxdepth: 1
 
+   usage
    changelog
 
 Source Code
@@ -26,12 +28,6 @@ Bugs/Support
 
 Bugs and support issues should be reported on the `pyelastictest github issue
 tracker <https://github.com/hannosch/pyelastictest/issues>`_.
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
 
 License
 =======
