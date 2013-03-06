@@ -13,7 +13,7 @@ class TestExtendedClient(TestCase, ESTestHarness):
 
     def _make_one(self):
         from pyelastictest import client
-        return client.ExtendedClient(self.es_process.address)
+        return client.ExtendedClient(self.es_cluster[0].address)
 
     def test_create_template(self):
         client = self._make_one()

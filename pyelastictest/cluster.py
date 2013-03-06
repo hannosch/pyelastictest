@@ -3,8 +3,10 @@ import os
 import random
 import shutil
 import tempfile
+import time
 import uuid
 
+from pyelastictest.client import ExtendedClient
 from pyelastictest.node import Node
 
 CLUSTER = None
@@ -35,6 +37,7 @@ class Cluster(object):
         self.name = uuid.uuid4().hex
         self.working_path = tempfile.mkdtemp()
         self.nodes = []
+        self.client = None
         # configure cluster ports
         self.port_base = port_base + random.randint(0, 90) * 10
         self.ports = []
@@ -51,6 +54,10 @@ class Cluster(object):
             self.nodes.append(node)
             node.start()
 
+        self.client = ExtendedClient(
+            [n.address for n in self.nodes], max_retries=1)
+        self.wait_until_ready()
+
     def stop(self):
         for node in self.nodes:
             node.stop()
@@ -58,6 +65,29 @@ class Cluster(object):
     def terminate(self):
         self.stop()
         shutil.rmtree(self.working_path, ignore_errors=True)
+
+    def wait_until_ready(self):
+        now = time.time()
+        while time.time() - now < 30:
+            try:
+                # check to see if our process is ready
+                health = self.client.health()
+            except Exception:
+                # wait a bit before re-trying
+                time.sleep(0.5)
+            else:
+                status = health['status']
+                name = health['cluster_name']
+                if status == 'green' and name == self.name:
+                    break
+        else:
+            raise OSError("Couldn't start elasticsearch")
+
+    def reset(self):
+        if self.client is None:
+            return
+        # cleanup all indices after each test run
+        self.client.delete_all_indexes()
 
     def __getitem__(self, i):
         return self.nodes[i]

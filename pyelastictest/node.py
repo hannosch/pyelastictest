@@ -3,9 +3,6 @@ import os.path
 import shutil
 import subprocess
 import tempfile
-import time
-
-from pyelastictest.client import ExtendedClient
 
 
 CONF = """\
@@ -62,8 +59,6 @@ class Node(object):
         self.process = None
 
     def start(self):
-        """Start a new ES process and wait until it's ready.
-        """
         install_path = self.cluster.install_path
         bin_path = os.path.join(self.working_path, "bin")
         config_path = os.path.join(self.working_path, "config")
@@ -118,12 +113,8 @@ class Node(object):
             env=environ
         )
         self.running = True
-        self.client = ExtendedClient(self.address)
-        self.wait_until_ready()
 
     def stop(self):
-        """Stop the ES process.
-        """
         try:
             self.process.terminate()
         except OSError:
@@ -133,46 +124,22 @@ class Node(object):
             self.process.wait()
         self.running = False
 
-    def wait_until_ready(self):
-        now = time.time()
-        while time.time() - now < 30:
-            try:
-                # check to see if our process is ready
-                health = self.client.health()
-                status = health['status']
-                name = health['cluster_name']
-                if status == 'green' and name == self.cluster.name:
-                    break
-            except Exception:
-                # wait a bit before re-trying
-                time.sleep(0.5)
-        else:
-            self.client = None
-            raise OSError("Couldn't start elasticsearch")
-
-    def reset(self):
-        if self.client is None:
-            return
-        # cleanup all indices after each test run
-        self.client.delete_all_indexes()
-
 
 class ESTestHarness(object):
 
     def setup_es(self):
         from pyelastictest.cluster import get_cluster
-        cluster = get_cluster()
-        self.es_process = cluster[0]
+        self.es_cluster = get_cluster()
         self._prior_templates = self._get_template_names()
 
     def teardown_es(self):
         self._delete_extra_templates()
-        self.es_process.reset()
+        self.es_cluster.reset()
 
     def _delete_extra_templates(self):
         current_templates = self._get_template_names()
         for t in current_templates - self._prior_templates:
-            self.es_process.client.delete_template(t)
+            self.es_cluster.client.delete_template(t)
 
     def _get_template_names(self):
-        return set(self.es_process.client.list_templates().keys())
+        return set(self.es_cluster.client.list_templates().keys())
