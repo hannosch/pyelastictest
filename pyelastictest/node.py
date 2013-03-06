@@ -1,7 +1,5 @@
-import atexit
 import os
 import os.path
-import random
 import shutil
 import subprocess
 import tempfile
@@ -10,39 +8,23 @@ import time
 from pyelastictest.client import ExtendedClient
 
 
-ES_PROCESS = None
-
-
-def get_global_es():
-    """Get or start a new isolated ElasticSearch process.
-    """
-    global ES_PROCESS
-    if ES_PROCESS is None:
-        ES_HOME = os.environ.get('ES_PATH')
-        if not ES_HOME:
-            raise ValueError('ES_PATH environment variable must be defined.')
-        ES_PROCESS = ESProcess(ES_HOME)
-        ES_PROCESS.start()
-        atexit.register(lambda proc: proc.stop(), ES_PROCESS)
-    return ES_PROCESS
-
-
-_CONF = """\
-cluster.name: test
-node.name: "test_1"
+CONF = """\
+cluster.name: "{cluster_name}"
+node.name: "{node_name}"
 index.number_of_shards: 1
 index.number_of_replicas: 0
 http.port: {port}
 transport.tcp.port: {tport}
 discovery.zen.ping.multicast.enabled: false
+discovery.zen.ping.unicast.hosts: {hosts}
 path.conf: {config_path}
-path.work: {work_path}
-path.plugins: {work_path}
+path.work: {working_path}
+path.plugins: {working_path}
 path.data: {data_path}
 path.logs: {log_path}
 """
 
-_CONF2 = """\
+LOG_CONF = """\
 rootLogger: INFO, console, file
 
 logger:
@@ -66,43 +48,23 @@ appender:
 
 
 class Node(object):
-
-    def __init__(self, cluster, node_id, http_port):
-        self.cluster = cluster
-        self.cluster_id = cluster.cluster_id
-        self.working_path = tempfile.mkdtemp(dir=cluster.working_path)
-        self.node_id = node_id
-        self.http_port = http_port
-        self.address = 'http://localhost:' + str(http_port)
-
-    def start(self):
-        pass
-
-    def stop(self):
-        pass
-
-
-class ESProcess(object):
-    """Start a new ElasticSearch process, isolated in a temporary
-    directory. By default it's configured to listen on localhost and
-    a random port between 9201 and 9298. The internal cluster transport
-    port is the port number plus 1.
+    """Start a new ElasticSearch node, isolated in a temporary
+    directory and part of a cluster.
     """
 
-    def __init__(self, install_path, host='localhost', port_base=9200):
-        self.install_path = install_path
-        self.host = host
-        self.port = port_base + random.randint(1, 98)
-        self.address = 'http://%s:%s' % (self.host, self.port)
-        self.working_path = None
-        self.process = None
+    def __init__(self, cluster, name, port):
+        self.cluster = cluster
+        self.working_path = tempfile.mkdtemp(dir=cluster.working_path)
+        self.name = name
+        self.port = port
+        self.address = 'http://localhost:' + str(port)
         self.running = False
-        self.client = None
+        self.process = None
 
     def start(self):
         """Start a new ES process and wait until it's ready.
         """
-        self.working_path = tempfile.mkdtemp()
+        install_path = self.cluster.install_path
         bin_path = os.path.join(self.working_path, "bin")
         config_path = os.path.join(self.working_path, "config")
         conf_path = os.path.join(config_path, "elasticsearch.yml")
@@ -116,27 +78,34 @@ class ESProcess(object):
                 os.mkdir(path)
 
         # copy ES startup scripts
-        es_bin_dir = os.path.join(self.install_path, 'bin')
+        es_bin_dir = os.path.join(install_path, 'bin')
         shutil.copy(os.path.join(es_bin_dir, 'elasticsearch'), bin_path)
         shutil.copy(os.path.join(es_bin_dir, 'elasticsearch.in.sh'), bin_path)
 
         # write configuration file
         with open(conf_path, "w") as config:
-            config.write(_CONF.format(port=self.port, tport=self.port + 1,
-                                      work_path=self.working_path,
-                                      config_path=config_path,
-                                      data_path=data_path, log_path=log_path))
+            config.write(CONF.format(
+                cluster_name=self.cluster.name,
+                node_name=self.name,
+                port=self.port,
+                tport=self.port + 1,
+                hosts=','.join(self.cluster.hosts),
+                working_path=self.working_path,
+                config_path=config_path,
+                data_path=data_path,
+                log_path=log_path,
+            ))
 
         # write log file
         with open(log_conf_path, "w") as config:
-            config.write(_CONF2)
+            config.write(LOG_CONF)
 
         # setup environment, copy from base process
         environ = os.environ.copy()
         # configure explicit ES_INCLUDE, to prevent fallback to
         # system-wide locations like /usr/share, /usr/local/, ...
         environ['ES_INCLUDE'] = os.path.join(bin_path, 'elasticsearch.in.sh')
-        lib_dir = os.path.join(self.install_path, 'lib')
+        lib_dir = os.path.join(install_path, 'lib')
         # let the process find our jar files first
         path = '{dir}/elasticsearch-*:{dir}/*:{dir}/sigar/*:$ES_CLASSPATH'
         environ['ES_CLASSPATH'] = path.format(dir=lib_dir)
@@ -144,7 +113,7 @@ class ESProcess(object):
         self.process = subprocess.Popen(
             args=[bin_path + "/elasticsearch", "-f",
                   "-Des.config=" + conf_path],
-            #stdout=subprocess.PIPE,
+            # stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             env=environ
         )
@@ -153,12 +122,16 @@ class ESProcess(object):
         self.wait_until_ready()
 
     def stop(self):
-        """Stop the ES process and removes the temporary directory.
+        """Stop the ES process.
         """
-        self.process.terminate()
+        try:
+            self.process.terminate()
+        except OSError:
+            # might not have been running
+            pass
+        else:
+            self.process.wait()
         self.running = False
-        self.process.wait()
-        shutil.rmtree(self.working_path, ignore_errors=True)
 
     def wait_until_ready(self):
         now = time.time()
@@ -168,7 +141,7 @@ class ESProcess(object):
                 health = self.client.health()
                 status = health['status']
                 name = health['cluster_name']
-                if status == 'green' and name == 'test':
+                if status == 'green' and name == self.cluster.name:
                     break
             except Exception:
                 # wait a bit before re-trying
@@ -187,7 +160,9 @@ class ESProcess(object):
 class ESTestHarness(object):
 
     def setup_es(self):
-        self.es_process = get_global_es()
+        from pyelastictest.cluster import get_cluster
+        cluster = get_cluster()
+        self.es_process = cluster[0]
         self._prior_templates = self._get_template_names()
 
     def teardown_es(self):

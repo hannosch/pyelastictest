@@ -32,7 +32,7 @@ class Cluster(object):
     def __init__(self, install_path, size=1, port_base=19000):
         self.install_path = install_path
         self.size = size
-        self.cluster_id = uuid.uuid4().hex
+        self.name = uuid.uuid4().hex
         self.working_path = tempfile.mkdtemp()
         self.nodes = []
         # configure cluster ports
@@ -47,7 +47,7 @@ class Cluster(object):
     def start(self):
         for i in range(self.size):
             port = self.ports[i]
-            node = Node(self, i, port)
+            node = Node(self, '%s_%s' % (self.name, i), port)
             self.nodes.append(node)
             node.start()
 
