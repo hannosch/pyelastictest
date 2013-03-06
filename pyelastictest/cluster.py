@@ -14,7 +14,7 @@ CLUSTER = None
 
 def get_es_path():
     ES_PATH = os.environ.get('ES_PATH')
-    if not ES_PATH:
+    if not ES_PATH:  # pragma: nocover
         raise ValueError('ES_PATH environment variable must be defined.')
     return ES_PATH
 
