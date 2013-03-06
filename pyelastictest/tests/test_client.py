@@ -1,15 +1,7 @@
-from unittest import TestCase
-
-from pyelastictest.node import ESTestHarness
+from pyelastictest import IsolatedTestCase
 
 
-class TestExtendedClient(TestCase, ESTestHarness):
-
-    def setUp(self):
-        self.setup_es()
-
-    def tearDown(self):
-        self.teardown_es()
+class TestExtendedClient(IsolatedTestCase):
 
     def _make_one(self):
         from pyelastictest import client

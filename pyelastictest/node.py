@@ -124,23 +124,3 @@ class Node(object):
         else:
             self.process.wait()
         self.running = False
-
-
-class ESTestHarness(object):
-
-    def setup_es(self):
-        from pyelastictest.cluster import get_cluster
-        self.es_cluster = get_cluster()
-        self._prior_templates = self._get_template_names()
-
-    def teardown_es(self):
-        self._delete_extra_templates()
-        self.es_cluster.reset()
-
-    def _delete_extra_templates(self):
-        current_templates = self._get_template_names()
-        for t in current_templates - self._prior_templates:
-            self.es_cluster.client.delete_template(t)
-
-    def _get_template_names(self):
-        return set(self.es_cluster.client.list_templates().keys())

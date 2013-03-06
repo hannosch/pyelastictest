@@ -1,12 +1,7 @@
-from unittest import TestCase
-
-from pyelastictest.node import ESTestHarness
+from pyelastictest import IsolatedTestCase
 
 
-class TestESTestHarness(TestCase, ESTestHarness):
+class TestIsolatedTestCase(IsolatedTestCase):
 
-    def setUp(self):
-        self.setup_es()
-
-    def tearDown(self):
-        self.teardown_es()
+    def test_init(self):
+        pass
