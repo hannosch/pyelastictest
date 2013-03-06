@@ -65,6 +65,22 @@ appender:
 """
 
 
+class Node(object):
+
+    def __init__(self, install_path, cluster_path, cluster_id, node_id):
+        self.install_path = install_path
+        self.cluster_path = cluster_path
+        self.working_path = tempfile.mkdtemp(dir=cluster_path)
+        self.cluster_id = cluster_id
+        self.node_id = node_id
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
+
+
 class ESProcess(object):
     """Start a new ElasticSearch process, isolated in a temporary
     directory. By default it's configured to listen on localhost and
