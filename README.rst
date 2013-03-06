@@ -20,4 +20,4 @@ Current Development CI Status
    :alt: Travis CI build report
    :target: https://travis-ci.org/hannosch/pyelastictest
 
-.. _the full docs: http://pyelastictest.rtfd.org/
+.. _the full docs: https://pyelastictest.readthedocs.org

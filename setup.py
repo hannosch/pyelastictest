@@ -34,7 +34,7 @@ setup(
     keywords='elasticsearch test',
     author="Hanno Schlichting",
     author_email="hanno@hannosch.eu",
-    url="https://kazoo.readthedocs.org",
+    url="https://pyelastictest.readthedocs.org",
     license="Apache 2.0",
     packages=find_packages(),
     test_suite="pyelastictest.tests",

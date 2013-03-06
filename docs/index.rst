@@ -5,7 +5,7 @@ pyelastictest
 pyelastictest provides a test harness for Python integration tests against a
 real ElasticSearch server.
 
-It uses `pyelasticsearch <http://pyelasticsearch.readthedocs.org>`_ as its
+It uses `pyelasticsearch <https://pyelasticsearch.readthedocs.org>`_ as its
 client library.
 
 Reference Docs
