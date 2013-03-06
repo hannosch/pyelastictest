@@ -83,17 +83,3 @@ class ExtendedClient(ElasticSearch):
         """
         return self.send_request(
             'GET', ['_cluster', 'state'], query_params=query_params)
-
-    @es_kwargs()
-    def multi_get(self, index=None, doc_type=None, body=None,
-                  query_params=None):
-        if not body:
-            # keep index and doc_type as first arguments,
-            # but require body
-            raise ValueError('A body is required.')
-
-        return self.send_request(
-            'GET',
-            [self._concat(index), self._concat(doc_type), '_mget'],
-            body,
-            query_params=query_params)
