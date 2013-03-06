@@ -43,8 +43,8 @@ class Cluster(object):
         self.ports = []
         port = self.port_base
         for i in range(size):
-            port += i * 10
             self.ports.append(port)
+            port += 10
         self.hosts = ['localhost:' + str(p + 1) for p in self.ports]
 
     def start(self):
