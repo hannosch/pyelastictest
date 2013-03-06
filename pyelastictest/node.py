@@ -11,10 +11,6 @@ from pyelastictest.client import ExtendedClient
 
 
 ES_PROCESS = None
-# find the top-level repo path and our elasticsearch install in it
-HERE = os.path.abspath(os.path.dirname(__file__))
-ROOT_DIR = os.path.abspath(os.path.join(HERE, os.pardir))
-ES_DIR = os.path.join(ROOT_DIR, 'elasticsearch')
 
 
 def get_global_es():
@@ -22,7 +18,10 @@ def get_global_es():
     """
     global ES_PROCESS
     if ES_PROCESS is None:
-        ES_PROCESS = ESProcess()
+        ES_HOME = os.environ.get('ES_PATH')
+        if not ES_HOME:
+            raise ValueError('ES_PATH environment variable must be defined.')
+        ES_PROCESS = ESProcess(ES_HOME)
         ES_PROCESS.start()
         atexit.register(lambda proc: proc.stop(), ES_PROCESS)
     return ES_PROCESS
@@ -73,7 +72,8 @@ class ESProcess(object):
     port is the port number plus 1.
     """
 
-    def __init__(self, host='localhost', port_base=9200):
+    def __init__(self, install_path, host='localhost', port_base=9200):
+        self.install_path = install_path
         self.host = host
         self.port = port_base + random.randint(1, 98)
         self.address = 'http://%s:%s' % (self.host, self.port)
@@ -99,7 +99,7 @@ class ESProcess(object):
                 os.mkdir(path)
 
         # copy ES startup scripts
-        es_bin_dir = os.path.join(ES_DIR, 'bin')
+        es_bin_dir = os.path.join(self.install_path, 'bin')
         shutil.copy(os.path.join(es_bin_dir, 'elasticsearch'), bin_path)
         shutil.copy(os.path.join(es_bin_dir, 'elasticsearch.in.sh'), bin_path)
 
@@ -119,7 +119,7 @@ class ESProcess(object):
         # configure explicit ES_INCLUDE, to prevent fallback to
         # system-wide locations like /usr/share, /usr/local/, ...
         environ['ES_INCLUDE'] = os.path.join(bin_path, 'elasticsearch.in.sh')
-        lib_dir = os.path.join(ES_DIR, 'lib')
+        lib_dir = os.path.join(self.install_path, 'lib')
         # let the process find our jar files first
         path = '{dir}/elasticsearch-*:{dir}/*:{dir}/sigar/*:$ES_CLASSPATH'
         environ['ES_CLASSPATH'] = path.format(dir=lib_dir)

@@ -5,7 +5,9 @@ PYTHON = $(BIN)/python
 INSTALL = $(BIN)/pip install --use-mirrors
 BUILD_DIRS = bin build elasticsearch include lib lib64 man share
 
+ES = $(HERE)/elasticsearch
 ES_VERSION ?= 0.20.5
+ES_PATH ?= $(ES)
 
 .PHONY: all build clean test
 
@@ -22,6 +24,7 @@ clean:
 	rm -rf $(BUILD_DIRS)
 
 test:
+	ES_PATH=$(ES_PATH) \
 	$(BIN)/nosetests -d -s -v --with-coverage --cover-package pyelastictest pyelastictest
 
 html:
