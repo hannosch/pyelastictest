@@ -24,6 +24,8 @@ class TestCluster(TestCase):
     def test_cluster_start(self):
         cluster = self._make_one()
         cluster.start()
+        self.assertTrue(cluster.client is not None)
+        self.assertEqual(cluster.client.health()['number_of_nodes'], 1)
 
     def test_cluster_start_twice(self):
         cluster = self._make_one()
@@ -52,3 +54,4 @@ class TestCluster(TestCase):
         self.assertEqual(len(cluster), 3)
         self.assertEqual(len(cluster.hosts), 3)
         self.assertEqual(len(os.listdir(cluster.working_path)), 3)
+        self.assertEqual(cluster.client.health()['number_of_nodes'], 3)

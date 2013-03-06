@@ -77,9 +77,10 @@ class Cluster(object):
                 # wait a bit before re-trying
                 time.sleep(0.5)
             else:
-                status = health['status']
-                name = health['cluster_name']
-                if status == 'green' and name == self.name:
+                status_ok = health['status'] == 'green'
+                name_ok = health['cluster_name'] == self.name
+                size_ok = health['number_of_nodes'] == len(self)
+                if status_ok and name_ok and size_ok:
                     break
         else:
             raise OSError("Couldn't start elasticsearch")
