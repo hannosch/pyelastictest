@@ -50,5 +50,6 @@ class TestCluster(TestCase):
     def test_cluster_size_3(self):
         cluster = self._make_one(size=3)
         cluster.start()
-        self.assertEqual(len(cluster.nodes), 3)
+        self.assertEqual(len(cluster), 3)
+        self.assertEqual(len(cluster.hosts), 3)
         self.assertEqual(len(os.listdir(cluster.working_path)), 3)

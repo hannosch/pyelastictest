@@ -67,12 +67,13 @@ appender:
 
 class Node(object):
 
-    def __init__(self, install_path, cluster_path, cluster_id, node_id):
-        self.install_path = install_path
-        self.cluster_path = cluster_path
-        self.working_path = tempfile.mkdtemp(dir=cluster_path)
-        self.cluster_id = cluster_id
+    def __init__(self, cluster, node_id, http_port):
+        self.cluster = cluster
+        self.cluster_id = cluster.cluster_id
+        self.working_path = tempfile.mkdtemp(dir=cluster.working_path)
         self.node_id = node_id
+        self.http_port = http_port
+        self.address = 'http://localhost:' + str(http_port)
 
     def start(self):
         pass
