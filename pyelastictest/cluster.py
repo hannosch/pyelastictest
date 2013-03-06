@@ -51,17 +51,17 @@ class Cluster(object):
         self.client = None
         # configure cluster ports
         self.ports = []
-        self.trans_ports = []
+        self.transport_ports = []
         for i in range(size):
             self.ports.append(get_free_port())
-            self.trans_ports.append(get_free_port())
-        self.hosts = ['localhost:%s' % p for p in self.trans_ports]
+            self.transport_ports.append(get_free_port())
+        self.hosts = ['localhost:%s' % p for p in self.transport_ports]
 
     def start(self):
         for i in range(self.size):
             port = self.ports[i]
-            trans_port = self.trans_ports[i]
-            node = Node(self, '%s_%s' % (self.name, i), port, trans_port)
+            transport_port = self.transport_ports[i]
+            node = Node(self, '%s_%s' % (self.name, i), port, transport_port)
             self.nodes.append(node)
             node.start()
 
