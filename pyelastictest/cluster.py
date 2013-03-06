@@ -30,18 +30,13 @@ def get_cluster():
     return CLUSTER
 
 
-def get_free_port(retry=10):
-    sock = None
-    for i in range(retry):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            sock.bind(('localhost', 0))
-        except socket.error:
-            sock.close()
-        else:
-            break
-    port = sock.getsockname()[1]
-    sock.close()
+def get_free_port():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.bind(('localhost', 0))
+        port = sock.getsockname()[1]
+    finally:
+        sock.close()
     return port
 
 
