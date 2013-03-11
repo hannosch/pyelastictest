@@ -1,6 +1,21 @@
+from contextlib import contextmanager
 from unittest import TestCase
 
 from pyelastictest.cluster import get_cluster
+
+
+@contextmanager
+def isolated(cluster=None):
+    """Provide isolation as a context manager.
+
+    The cluster argument is the same as the one to :attr:`Isolated.setup_es`.
+    """
+    isolated = Isolated()
+    try:
+        isolated.setup_es(cluster)
+        yield isolated
+    finally:
+        isolated.teardown_es()
 
 
 class Isolated(object):

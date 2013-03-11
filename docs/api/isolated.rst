@@ -13,3 +13,5 @@ Public API
 
     .. autoclass:: IsolatedTestCase()
         :members:
+
+    .. autofunction:: isolated(cluster=None)

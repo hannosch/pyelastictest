@@ -4,11 +4,13 @@ Changelog
 0.2 (unreleased)
 ----------------
 
+- Add `isolated.isolated` context manager.
+
 - Add basic API documentation for all public modules.
 
 - Allow explicit configuration of all cluster ports.
 
-- Added an `address` property to the cluster, to expose a client connection
+- Add an `address` property to the cluster, to expose a client connection
   string including all cluster nodes.
 
 0.1 (2013-03-06)
