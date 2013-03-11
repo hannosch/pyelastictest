@@ -8,6 +8,10 @@
 Public API
 ++++++++++
 
+    .. autofunction:: get_cluster
+
+    .. autofunction:: get_es_path
+
     .. autoclass:: Cluster()
         :members:
 
@@ -16,3 +20,8 @@ Public API
         .. automethod:: __getitem__
 
         .. automethod:: __len__
+
+Private API
++++++++++++
+
+    .. autofunction:: get_free_port
