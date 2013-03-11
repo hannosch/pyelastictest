@@ -30,8 +30,7 @@ def get_cluster():
     """
     global CLUSTER
     if CLUSTER is None:
-        ES_PATH = get_es_path()
-        CLUSTER = Cluster(ES_PATH)
+        CLUSTER = Cluster()
         CLUSTER.start()
     return CLUSTER
 
