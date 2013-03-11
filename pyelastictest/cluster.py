@@ -6,6 +6,9 @@ import tempfile
 import time
 import uuid
 
+from pyelasticsearch.exceptions import ElasticHttpError
+from requests.exceptions import RequestException
+
 from pyelastictest.client import ExtendedClient
 from pyelastictest.node import Node
 
@@ -139,7 +142,7 @@ class Cluster(object):
             try:
                 # check to see if our process is ready
                 health = self.client.health()
-            except Exception:
+            except (ElasticHttpError, RequestException):
                 # wait a bit before re-trying
                 time.sleep(0.2)
             else:
