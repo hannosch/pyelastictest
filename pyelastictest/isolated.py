@@ -5,7 +5,7 @@ from pyelastictest.cluster import get_cluster
 
 class Isolated(object):
     """Provides test data isolation for a running
-    :class:`pyelastictest.cluster.Cluster`.
+    :class:`~pyelastictest.cluster.Cluster`.
 
     Currently it deletes all indexes on teardown. Prior existing templates
     will be detected and left alone. All extra templates will be removed.
@@ -19,7 +19,7 @@ class Isolated(object):
         :param cluster: Specifies the cluster, if none is specifies
                         calls :attr:`~pyelastictest.cluster.get_cluster`
                         to get or create a module global cluster.
-        :type cluster: :class:`pyelastictest.cluster.Cluster`
+        :type cluster: :class:`~pyelastictest.cluster.Cluster`
 
         """
         if cluster is None:
