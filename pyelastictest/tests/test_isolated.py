@@ -47,3 +47,20 @@ class TestIsolatedContextManager(TestCase):
             iso.es_client.refresh()
             self.assertEqual(len(iso.es_client.status()['indices']), 1)
         self.assertEqual(len(self.cluster.client.status()['indices']), 0)
+
+    def test_template_deletion(self):
+        self.cluster.client.create_template('before', {
+            "template": "index_*",
+            "settings": {"number_of_replicas": "13"},
+        })
+        with self._get_target()(cluster=self.cluster) as iso:
+            self.assertEqual(
+                iso.es_client.list_templates().keys(), ['before'])
+            iso.es_client.create_template('inside', {
+                "template": "index_*",
+                "settings": {"number_of_replicas": "7"},
+            })
+            self.assertEqual(set(iso.es_client.list_templates().keys()),
+                             set(['before', 'inside']))
+        self.assertEqual(
+            self.cluster.client.list_templates().keys(), ['before'])
