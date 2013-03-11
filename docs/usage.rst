@@ -45,10 +45,10 @@ Example:
 Test Case
 =========
 
-The :class:`~pyelastictest.isolated.IsolatedTestCase` is a complete test case
-that is equivalent to inheriting from both the standard `unittest.TestCase` and
-:class:`~pyelastictest.isolated.Isolated`. An equivalent test to the
-one above:
+The :class:`~pyelastictest.isolated.IsolatedTestCase` is a complete test case,
+which is equivalent to inheriting from both the standard
+:class:`unittest.TestCase` and :class:`~pyelastictest.isolated.Isolated`
+classes. An equivalent test to the one above:
 
 .. code-block:: python
 
@@ -68,7 +68,7 @@ Context manager
 
 If you want finer control, you can also use the isolation via a context
 manager. The :class:`~pyelastictest.isolated.Isolated` class stores the
-before and after state of the ElasticSearch cluster and resets the state:
+before state of the ElasticSearch cluster and resets the state:
 
 
 .. code-block:: python
