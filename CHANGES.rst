@@ -4,6 +4,7 @@ Changelog
 0.3 (unreleased)
 ----------------
 
+- Expand documentation.
 
 0.2 (2013-03-11)
 ----------------

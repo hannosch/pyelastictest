@@ -16,8 +16,8 @@ CLUSTER = None
 
 
 def get_es_path():
-    """Return `ES_PATH` environment variable or raise a `ValueError` if the
-    variable isn't found or doesn't point to a directory.
+    """Return the `ES_PATH` environment variable or raise a `ValueError` if
+    the variable isn't found or doesn't point to a directory.
     """
     ES_PATH = os.environ.get('ES_PATH')
     if not ES_PATH or not os.path.isdir(ES_PATH):  # pragma: nocover
