@@ -12,7 +12,7 @@ class Isolated(object):
 
     def teardown_es(self):
         self._delete_extra_templates()
-        self.es_cluster.reset()
+        self.es_client.delete_all_indexes()
 
     def _delete_extra_templates(self):
         current_templates = self._get_template_names()

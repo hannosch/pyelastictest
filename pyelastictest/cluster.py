@@ -151,12 +151,6 @@ class Cluster(object):
         else:
             raise OSError("Couldn't start elasticsearch")
 
-    def reset(self):
-        if self.client is None:
-            return
-        # cleanup all indices after each test run
-        self.client.delete_all_indexes()
-
     def __getitem__(self, n):
         """Return the zero to n-th cluster node.
         """
