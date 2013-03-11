@@ -4,6 +4,8 @@ Changelog
 0.2 (unreleased)
 ----------------
 
+- Allow configuration of hostname instead of hardcoding `localhost`.
+
 - Add `isolated.isolated` context manager.
 
 - Add basic API documentation for all public modules.

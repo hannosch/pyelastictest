@@ -66,7 +66,7 @@ class Node(object):
         self.name = name
         self.port = port
         self.trans_port = trans_port
-        self.address = 'http://localhost:' + str(port)
+        self.address = 'http://%s:%s' % (self.cluster.hostname, port)
         self.running = False
         self.process = None
 
