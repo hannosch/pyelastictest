@@ -47,11 +47,12 @@ class Cluster(object):
     stopped at the end of the test run and the temporary data cleaned up.
     """
 
-    def __init__(self, install_path, size=1, ports=None):
+    def __init__(self, install_path=None, size=1, ports=None):
         """Create an ElasticSearch cluster.
 
         :param install_path: The filesystem path to an unpacked ElasticSearch
-                             tarball.
+                             tarball. If `None` is specified, the path will
+                             be taken from the `ES_PATH` environment variable.
         :type install_path: str
         :param size: The number of cluster nodes to create.
         :type size: int
@@ -61,6 +62,8 @@ class Cluster(object):
                       free ports.
         :type ports: list
         """
+        if install_path is None:
+            install_path = get_es_path()
         self.install_path = install_path
         self.size = size
         self.name = uuid.uuid4().hex

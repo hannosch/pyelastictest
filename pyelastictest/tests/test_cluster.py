@@ -13,8 +13,7 @@ class TestCluster(TestCase):
 
     def _make_one(self, **kw):
         from pyelastictest import cluster
-        es_path = cluster.get_es_path()
-        self._cluster = cluster.Cluster(es_path, **kw)
+        self._cluster = cluster.Cluster(**kw)
         return self._cluster
 
     def test_cluster_init(self):
