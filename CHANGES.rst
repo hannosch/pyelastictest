@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2 (unreleased)
+0.2 (2013-03-11)
 ----------------
 
 - Allow configuration of ip instead of hardcoding `127.0.0.1`.
