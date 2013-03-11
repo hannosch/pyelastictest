@@ -146,6 +146,7 @@ class Cluster(object):
         shutil.rmtree(self.working_path, ignore_errors=True)
 
     def wait_until_ready(self, timeout=30):
+        time.sleep(2)
         now = time.time()
         while time.time() - now < timeout:
             try:
@@ -160,7 +161,7 @@ class Cluster(object):
                 size_ok = health['number_of_nodes'] == len(self)
                 if status_ok and name_ok and size_ok:
                     break
-        else:
+        else:  # pragma: nocover
             raise OSError("Couldn't start elasticsearch")
 
     def __getitem__(self, n):
