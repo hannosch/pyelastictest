@@ -12,3 +12,4 @@ organized alphabetically by module name.
    :maxdepth: 1
 
    api/cluster
+   api/isolated
