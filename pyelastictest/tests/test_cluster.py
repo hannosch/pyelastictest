@@ -74,4 +74,4 @@ class TestCluster(TestCase):
         client.refresh('test_shards')
         shard_info = client.status()['indices']['test_shards']['shards']['0']
         nodes = set([s['routing']['node'] for s in shard_info])
-        self.assertEqual(len(nodes), 3)
+        self.assertTrue(len(nodes) > 1)
