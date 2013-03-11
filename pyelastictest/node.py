@@ -50,6 +50,17 @@ class Node(object):
     """
 
     def __init__(self, cluster, name, port, trans_port):
+        """Create a new cluster node.
+
+        :param cluster: A cluster instance which this node is a part of.
+        :type cluster: :class:`~pyelastictest.cluster.Cluster`
+        :param name: The name of the node.
+        :type name: str
+        :param port: The public client port.
+        :type port: int
+        :param trans_port: The internal cluster communication port.
+        :type trans_port: int
+        """
         self.cluster = cluster
         self.working_path = tempfile.mkdtemp(dir=cluster.working_path)
         self.name = name
@@ -60,6 +71,8 @@ class Node(object):
         self.process = None
 
     def start(self):
+        """Start the node as a subprocess in a temporary directory.
+        """
         install_path = self.cluster.install_path
         bin_path = os.path.join(self.working_path, "bin")
         config_path = os.path.join(self.working_path, "config")
@@ -116,6 +129,8 @@ class Node(object):
         self.running = True
 
     def stop(self):
+        """Stop the node and terminate the subprocess.
+        """
         try:
             self.process.terminate()
         except OSError:

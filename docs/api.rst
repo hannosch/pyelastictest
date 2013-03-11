@@ -13,3 +13,4 @@ organized alphabetically by module name.
 
    api/cluster
    api/isolated
+   api/node
