@@ -151,7 +151,7 @@ class Cluster(object):
                 health = self.client.health()
             except (ElasticHttpError, RequestException):
                 # wait a bit before re-trying
-                time.sleep(0.2)
+                time.sleep(0.5)
             else:
                 status_ok = health['status'] == 'green'
                 name_ok = health['cluster_name'] == self.name
