@@ -106,11 +106,10 @@ class Cluster(object):
         self.hosts = ['%s:%s' % (hostname, p) for p in self.transport_ports]
 
     @property
-    def address(self):
-        """Exposes a client connection string to connect to all cluster nodes.
+    def urls(self):
+        """Exposes a list of client urls to connect to all cluster nodes.
         """
-        return ','.join(
-            ['http://%s:%s' % (self.hostname, p) for p in self.ports])
+        return ['http://%s:%s' % (self.hostname, p) for p in self.ports]
 
     def start(self, timeout=30):
         """Start all cluster nodes and wait for them to be ready.
@@ -127,7 +126,7 @@ class Cluster(object):
             self.nodes.append(node)
             node.start()
 
-        self.client = ExtendedClient(self.address.split(','), max_retries=1)
+        self.client = ExtendedClient(self.urls, max_retries=1)
         self.wait_until_ready(timeout)
 
     def stop(self):

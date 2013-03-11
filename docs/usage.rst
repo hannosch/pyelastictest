@@ -23,6 +23,7 @@ Example:
 
     import unittest
 
+    from pyelasticsearch import ElasticSearch
     from pyelastictest import Isolated
 
 
@@ -35,7 +36,8 @@ Example:
             self.teardown_es()
 
         def test_mycode(self):
-            self.es_client.index('test_index', 'test_type', {'foo': 1})
+            es = ElasticSearch(self.es_cluster.urls)
+            es.index('test_index', 'test_type', {'foo': 1})
             ...
 
 
@@ -49,10 +51,12 @@ one above:
 
 .. code-block:: python
 
+    from pyelasticsearch import ElasticSearch
     from pyelastictest import IsolatedTestCase
 
     class MyTest(IsolatedTestCase):
 
         def test_mycode(self):
-            self.es_client.index('test_index', 'test_type', {'foo': 1})
+            es = ElasticSearch(self.es_cluster.urls)
+            es.index('test_index', 'test_type', {'foo': 1})
             ...

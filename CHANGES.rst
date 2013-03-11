@@ -12,8 +12,8 @@ Changelog
 
 - Allow explicit configuration of all cluster ports.
 
-- Add an `address` property to the cluster, to expose a client connection
-  string including all cluster nodes.
+- Add an `urls` property to the cluster, to expose a list of client urls for
+  all cluster nodes.
 
 0.1 (2013-03-06)
 ----------------
