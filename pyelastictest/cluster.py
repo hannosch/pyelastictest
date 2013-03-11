@@ -40,8 +40,27 @@ def get_free_port():
 
 
 class Cluster(object):
+    """An isolated ElasticSearch cluster of a given size.
 
-    def __init__(self, install_path, size=1):
+    The cluster stores all data in a temporary directory, uses a uuid as the
+    cluster name and only connects to its own list of nodes. The processes are
+    stopped at the end of the test run and the temporary data cleaned up.
+    """
+
+    def __init__(self, install_path, size=1, ports=None):
+        """Create an ElasticSearch cluster.
+
+        :param install_path: The filesystem path to an unpacked ElasticSearch
+                             tarball.
+        :type install_path: str
+        :param size: The number of cluster nodes to create.
+        :type size: int
+        :param ports: An optional list of port tuples. The first value in each
+                      tuple is the client port and the second the cluster
+                      transport port. By default the code lets the OS choose
+                      free ports.
+        :type ports: list
+        """
         self.install_path = install_path
         self.size = size
         self.name = uuid.uuid4().hex
@@ -49,11 +68,21 @@ class Cluster(object):
         self.nodes = []
         self.client = None
         # configure cluster ports
+        self.configure_ports(size, ports)
+
+    def configure_ports(self, size, ports):
         self.ports = []
         self.transport_ports = []
-        for i in range(size):
-            self.ports.append(get_free_port())
-            self.transport_ports.append(get_free_port())
+        if ports is None:
+            for i in range(size):
+                self.ports.append(get_free_port())
+                self.transport_ports.append(get_free_port())
+        elif len(ports) != size:
+            raise ValueError("The specified ports didn't match the size.")
+        else:
+            for port, tport in ports:
+                self.ports.append(port)
+                self.transport_ports.append(tport)
         self.hosts = ['localhost:%s' % p for p in self.transport_ports]
 
     @property

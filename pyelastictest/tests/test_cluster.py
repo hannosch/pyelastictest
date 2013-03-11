@@ -11,15 +11,24 @@ class TestCluster(TestCase):
         if self._cluster:
             self._cluster.terminate()
 
-    def _make_one(self, size=1):
+    def _make_one(self, **kw):
         from pyelastictest import cluster
         es_path = cluster.get_es_path()
-        self._cluster = cluster.Cluster(es_path, size=size)
+        self._cluster = cluster.Cluster(es_path, **kw)
         return self._cluster
 
     def test_cluster_init(self):
         cluster = self._make_one()
         self.assertEqual(cluster.nodes, [])
+
+    def test_cluster_init_ports(self):
+        cluster = self._make_one(size=2, ports=[(9201, 9202), (9203, 9204)])
+        self.assertEqual(cluster.ports, [9201, 9203])
+        self.assertEqual(cluster.transport_ports, [9202, 9204])
+
+    def test_cluster_init_size_ports_mismatch(self):
+        self.assertRaises(ValueError,
+            self._make_one, size=2, ports=[(9201, 9202)])
 
     def test_cluster_start(self):
         cluster = self._make_one()
