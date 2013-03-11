@@ -15,6 +15,7 @@ Reference Docs
    :maxdepth: 1
 
    usage
+   api
    changelog
 
 Source Code

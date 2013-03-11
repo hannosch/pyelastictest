@@ -100,7 +100,13 @@ class Cluster(object):
         """
         return ','.join(['http://localhost:%s' % p for p in self.ports])
 
-    def start(self):
+    def start(self, timeout=30):
+        """Start all cluster nodes and wait for them to be ready.
+
+        :param timeout: Time in seconds to wait for cluster startup to succeed.
+        :type timeout: int
+        :raises: `OSError` if any of the cluster nodes couldn't be started.
+        """
         atexit.register(lambda proc: proc.terminate(), self)
         for i in range(self.size):
             port = self.ports[i]
@@ -111,20 +117,25 @@ class Cluster(object):
 
         self.client = ExtendedClient(
             [n.address for n in self.nodes], max_retries=1)
-        self.wait_until_ready()
+        self.wait_until_ready(timeout)
 
     def stop(self):
+        """Stop all cluster nodes."""
         for node in self.nodes:
             node.stop()
 
     def terminate(self):
+        """Stop the cluster and remove all working directories.
+
+        This method is automatically called via an `atexit` handler.
+        """
         self.stop()
         self.client = None
         shutil.rmtree(self.working_path, ignore_errors=True)
 
-    def wait_until_ready(self):
+    def wait_until_ready(self, timeout=30):
         now = time.time()
-        while time.time() - now < 30:
+        while time.time() - now < timeout:
             try:
                 # check to see if our process is ready
                 health = self.client.health()
@@ -146,8 +157,12 @@ class Cluster(object):
         # cleanup all indices after each test run
         self.client.delete_all_indexes()
 
-    def __getitem__(self, i):
-        return self.nodes[i]
+    def __getitem__(self, n):
+        """Return the zero to n-th cluster node.
+        """
+        return self.nodes[n]
 
     def __len__(self):
+        """Return the number of cluster nodes.
+        """
         return self.size
