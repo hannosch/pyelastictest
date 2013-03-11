@@ -118,6 +118,10 @@ class Node(object):
         # let the process find our jar files first
         path = '{dir}/elasticsearch-*:{dir}/*:{dir}/sigar/*:$ES_CLASSPATH'
         environ['ES_CLASSPATH'] = path.format(dir=lib_dir)
+        # reduce JVM startup time
+        environ['ES_MIN_MEM'] = '64m'
+        environ['JAVA_OPTS'] = \
+            '-client -XX:+TieredCompilation -XX:TieredStopAtLevel=1'
 
         self.process = subprocess.Popen(
             args=[bin_path + "/elasticsearch", "-f",
