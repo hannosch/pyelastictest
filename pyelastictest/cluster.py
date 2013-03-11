@@ -124,7 +124,7 @@ class Cluster(object):
             self.nodes.append(node)
             node.start()
 
-        self.client = ExtendedClient(self.urls, max_retries=1)
+        self.client = ExtendedClient(self.urls, max_retries=len(self))
         self.wait_until_ready(timeout)
 
     def stop(self):
