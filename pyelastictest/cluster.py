@@ -149,7 +149,7 @@ class Cluster(object):
             try:
                 # check to see if our process is ready
                 health = self.client.health()
-            except (ElasticHttpError, RequestException):
+            except (ElasticHttpError, RequestException, socket.error):
                 # wait a bit before re-trying
                 time.sleep(0.5)
             else:
