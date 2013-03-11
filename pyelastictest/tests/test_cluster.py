@@ -54,6 +54,7 @@ class TestCluster(TestCase):
         self.assertEqual(len(cluster), 3)
         self.assertEqual(len(cluster.hosts), 3)
         self.assertEqual(len(os.listdir(cluster.working_path)), 3)
+        self.assertEqual(len(cluster.address.split(',')), 3)
         client = cluster.client
         self.assertEqual(client.health()['number_of_nodes'], 3)
         # test if routing works and data is actually distributed across nodes

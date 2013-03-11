@@ -56,6 +56,12 @@ class Cluster(object):
             self.transport_ports.append(get_free_port())
         self.hosts = ['localhost:%s' % p for p in self.transport_ports]
 
+    @property
+    def address(self):
+        """Exposes a client connection string to connect to all cluster nodes.
+        """
+        return ','.join(['http://localhost:%s' % p for p in self.ports])
+
     def start(self):
         for i in range(self.size):
             port = self.ports[i]

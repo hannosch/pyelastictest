@@ -4,6 +4,8 @@ Changelog
 0.2 (unreleased)
 ----------------
 
+- Added an `address` property to the cluster, to expose a client connection
+  string including all cluster nodes.
 
 0.1 (2013-03-06)
 ----------------
