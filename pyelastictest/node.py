@@ -10,6 +10,7 @@ cluster.name: "{cluster_name}"
 node.name: "{node_name}"
 index.number_of_shards: 1
 index.number_of_replicas: 0
+network.host: "{host}"
 http.port: {port}
 transport.tcp.port: {tport}
 discovery.zen.ping.multicast.enabled: false
@@ -66,7 +67,7 @@ class Node(object):
         self.name = name
         self.port = port
         self.trans_port = trans_port
-        self.url = 'http://%s:%s' % (self.cluster.hostname, port)
+        self.url = 'http://%s:%s' % (self.cluster.ip, port)
         self.running = False
         self.process = None
 
@@ -96,6 +97,7 @@ class Node(object):
             config.write(CONF.format(
                 cluster_name=self.cluster.name,
                 node_name=self.name,
+                host=self.cluster.ip,
                 port=self.port,
                 tport=self.trans_port,
                 hosts=','.join(self.cluster.hosts),

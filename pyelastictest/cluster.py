@@ -36,15 +36,15 @@ def get_cluster():
     return CLUSTER
 
 
-def get_free_port(hostname='localhost'):
+def get_free_port(ip='127.0.0.1'):
     """Let the operating system give us a free port.
 
-    :param hostname: The name or ip address of the local machine.
-    :type hostname: str
+    :param ip: The ip address of the local machine.
+    :type ip: str
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        sock.bind((hostname, 0))
+        sock.bind((ip, 0))
         port = sock.getsockname()[1]
     finally:
         sock.close()
@@ -60,15 +60,15 @@ class Cluster(object):
     """
 
     def __init__(self,
-                 install_path=None, hostname='localhost', size=1, ports=None):
+                 install_path=None, ip='127.0.0.1', size=1, ports=None):
         """Create an ElasticSearch cluster.
 
         :param install_path: The filesystem path to an unpacked ElasticSearch
                              tarball. If `None` is specified, the path will
                              be taken from the `ES_PATH` environment variable.
         :type install_path: str
-        :param hostname: The name or ip address of the local machine.
-        :type hostname: str
+        :param ip: The ip address of the local machine.
+        :type ip: str
         :param size: The number of cluster nodes to create.
         :type size: int
         :param ports: An optional list of port tuples. The first value in each
@@ -80,7 +80,7 @@ class Cluster(object):
         if install_path is None:
             install_path = get_es_path()
         self.install_path = install_path
-        self.hostname = hostname
+        self.ip = ip
         self.size = size
         self.name = uuid.uuid4().hex
         self.working_path = tempfile.mkdtemp()
@@ -90,26 +90,25 @@ class Cluster(object):
         self.configure_ports(size, ports)
 
     def configure_ports(self, size, ports):
-        hostname = self.hostname
         self.ports = []
         self.transport_ports = []
         if ports is None:
             for i in range(size):
-                self.ports.append(get_free_port(hostname))
-                self.transport_ports.append(get_free_port(hostname))
+                self.ports.append(get_free_port(self.ip))
+                self.transport_ports.append(get_free_port(self.ip))
         elif len(ports) != size:
             raise ValueError("The specified ports didn't match the size.")
         else:
             for port, tport in ports:
                 self.ports.append(port)
                 self.transport_ports.append(tport)
-        self.hosts = ['%s:%s' % (hostname, p) for p in self.transport_ports]
+        self.hosts = ['%s:%s' % (self.ip, p) for p in self.transport_ports]
 
     @property
     def urls(self):
         """Exposes a list of client urls to connect to all cluster nodes.
         """
-        return ['http://%s:%s' % (self.hostname, p) for p in self.ports]
+        return ['http://%s:%s' % (self.ip, p) for p in self.ports]
 
     def start(self, timeout=30):
         """Start all cluster nodes and wait for them to be ready.

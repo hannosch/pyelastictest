@@ -4,7 +4,7 @@ Changelog
 0.2 (unreleased)
 ----------------
 
-- Allow configuration of hostname instead of hardcoding `localhost`.
+- Allow configuration of ip instead of hardcoding `127.0.0.1`.
 
 - Add `isolated.isolated` context manager.
 
