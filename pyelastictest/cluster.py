@@ -130,7 +130,8 @@ class Cluster(object):
     def terminate(self):
         """Stop the cluster and remove all working directories.
 
-        This method is automatically called via an `atexit` handler.
+        This method is automatically called via an `atexit` handler,
+        registered in :attr:`Cluster.start`.
         """
         self.stop()
         self.client = None
