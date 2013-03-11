@@ -5,6 +5,9 @@ from pyelasticsearch.client import es_kwargs
 class ExtendedClient(ElasticSearch):
     """Wrapper around pyelasticsearch's client to add some missing
     API's. These should be merged upstream.
+
+    This class is not meant for external use and doesn't constitute a
+    public API.
     """
 
     @es_kwargs()
