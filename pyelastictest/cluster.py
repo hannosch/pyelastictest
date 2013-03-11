@@ -20,16 +20,19 @@ def get_es_path():
 
 
 def get_cluster():
+    """Get or create a module global cluster.
+    """
     global CLUSTER
     if CLUSTER is None:
         ES_PATH = get_es_path()
         CLUSTER = Cluster(ES_PATH)
         CLUSTER.start()
-        atexit.register(lambda proc: proc.terminate(), CLUSTER)
     return CLUSTER
 
 
 def get_free_port():
+    """Let the operating system give us a free port.
+    """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.bind(('localhost', 0))
@@ -95,6 +98,7 @@ class Cluster(object):
         return ','.join(['http://localhost:%s' % p for p in self.ports])
 
     def start(self):
+        atexit.register(lambda proc: proc.terminate(), self)
         for i in range(self.size):
             port = self.ports[i]
             transport_port = self.transport_ports[i]
