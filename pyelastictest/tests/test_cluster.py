@@ -1,6 +1,8 @@
 import os
 from unittest import TestCase
 
+from pyelasticsearch import ElasticSearch
+
 
 class TestCluster(TestCase):
 
@@ -63,7 +65,7 @@ class TestCluster(TestCase):
         self.assertEqual(len(cluster.hosts), 3)
         self.assertEqual(len(os.listdir(cluster.working_path)), 3)
         self.assertEqual(len(cluster.urls), 3)
-        client = cluster.client
+        client = ElasticSearch(cluster.urls, max_retries=2)
         self.assertEqual(client.health()['number_of_nodes'], 3)
         # test if routing works and data is actually distributed across nodes
         client.create_index('test_shards', settings={
