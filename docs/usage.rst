@@ -7,13 +7,9 @@ Usage
 pyelastictest provides a helper class to manage a temporary ElasticSearch
 cluster and provides full test isolation between test runs.
 
-The test helper needs to be able to find an ElasticSearch installation. You
+The test helper needs to be able to find an unpacked ElasticSearch tarball. You
 need to specify an environment variable called `ES_PATH` and point it at the
-location. The directory should contain bin and lib directories.
-
-By default everything uses a module global ElasticSearch cluster with a single
-node. You can configure different settings and use multiple clusters in the
-same test suite if you really want to.
+location.
 
 
 Isolated
@@ -49,8 +45,8 @@ Example:
 Test Case
 =========
 
-The :class:`~pyelastictest.isolated.IsolatedTestCase` is complete test case that
-is equivalent to the mix-in setup of a standard `unittest.TestCase` and
+The :class:`~pyelastictest.isolated.IsolatedTestCase` is a complete test case
+that is equivalent to inheriting from both the standard `unittest.TestCase` and
 :class:`~pyelastictest.isolated.Isolated`. An equivalent test to the
 one above:
 

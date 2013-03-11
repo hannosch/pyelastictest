@@ -5,8 +5,20 @@ pyelastictest
 pyelastictest provides a test harness for Python integration tests against a
 real ElasticSearch server.
 
-It uses `pyelasticsearch <https://pyelasticsearch.readthedocs.org>`_ as its
-client library.
+It creates a local ElasticSearch cluster in a temporary directory and runs it
+as a subprocess. The cluster is isolated from any other ElasticSearch cluster
+via a locked-down configuration.
+
+By default the API's use a module global ElasticSearch cluster with a single
+node. You can configure different settings and use multiple clusters in the
+same test suite if you really want to.
+
+The different API's in the isolated module provide setup and teardown methods
+to isolate each test method and provide a clean state.
+
+`pyelasticsearch <https://pyelasticsearch.readthedocs.org>`_ is used as the
+client library, but the resulting ElasticSearch cluster is available via the
+standard HTTP API and usable by any other library.
 
 Reference Docs
 ==============
