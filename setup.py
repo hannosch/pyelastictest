@@ -14,7 +14,7 @@ tests_require = [
     'Sphinx',
 ]
 
-__version__ = '0.3'
+__version__ = '0.4'
 
 setup(
     name='pyelastictest',
