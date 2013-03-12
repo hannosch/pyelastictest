@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.3 (unreleased)
+0.3 (2013-03-12)
 ----------------
 
 - Filter out all log messages during `cluster.wait_until_ready`.
