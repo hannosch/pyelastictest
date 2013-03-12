@@ -4,6 +4,9 @@ Changelog
 0.3 (unreleased)
 ----------------
 
+- Issue #5: Redirect subprocess stdout/err to files and log those as debug
+  logging messages when a node is stopped.
+
 - Expand documentation.
 
 0.2 (2013-03-11)

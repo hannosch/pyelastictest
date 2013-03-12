@@ -1,3 +1,4 @@
+import logging
 import os
 import os.path
 import shutil
@@ -70,6 +71,9 @@ class Node(object):
         self.url = 'http://%s:%s' % (self.cluster.ip, port)
         self.running = False
         self.process = None
+        self.logger = logging.getLogger(self.name)
+        self.stdout = None
+        self.stderr = None
 
     def start(self):
         """Start the node as a subprocess in a temporary directory.
@@ -111,6 +115,12 @@ class Node(object):
         with open(log_conf_path, "w") as config:
             config.write(LOG_CONF)
 
+        # create stdout/err files
+        self.stdout = tempfile.TemporaryFile(
+            suffix='stdout', dir=self.working_path)
+        self.stderr = tempfile.TemporaryFile(
+            suffix='stderr', dir=self.working_path)
+
         # setup environment, copy from base process
         environ = os.environ.copy()
         # configure explicit ES_INCLUDE, to prevent fallback to
@@ -128,8 +138,8 @@ class Node(object):
         self.process = subprocess.Popen(
             args=[bin_path + "/elasticsearch", "-f",
                   "-Des.config=" + conf_path],
-            # stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stdout=self.stdout,
+            stderr=self.stderr,
             env=environ
         )
         self.running = True
@@ -137,11 +147,19 @@ class Node(object):
     def stop(self):
         """Stop the node and terminate the subprocess.
         """
-        try:
-            self.process.terminate()
-        except OSError:
-            # might not have been running
-            pass
-        else:
-            self.process.wait()
+        if self.running:
+            # dump log fies to logging module
+            self.stdout.seek(0)
+            for line in self.stdout.readlines():
+                self.logger.debug(line)
+            self.stderr.seek(0)
+            for line in self.stderr.readlines():
+                self.logger.debug(line)
+            try:
+                self.process.terminate()
+            except OSError:
+                # might not have been running
+                pass
+            else:
+                self.process.wait()
         self.running = False
