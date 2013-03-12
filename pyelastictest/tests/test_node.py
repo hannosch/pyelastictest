@@ -18,11 +18,12 @@ class TestIsolatedTestCase(IsolatedTestCase):
         es = ElasticSearch(reversed(self.cluster.urls))
 
         def es_health():
-            for i in range(3):
+            for i in range(10):
                 try:
-                    return es.health()
+                    return es.health(wait_for_nodes='>1')
                 except ConnectionError:
                     pass
+            return {}
 
         self.cluster[0].stop()
         self.assertEqual(es_health()['number_of_nodes'], 2)

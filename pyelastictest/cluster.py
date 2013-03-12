@@ -159,15 +159,15 @@ class Cluster(object):
         while time.time() - now < timeout:
             try:
                 # check to see if our process is ready
-                health = self.client.health()
+                health = self.client.health(
+                    wait_for_status="green",
+                    wait_for_nodes='>=%s' % len(self),
+                )
             except (ElasticHttpError, RequestException, socket.error):
                 # wait a bit before re-trying
-                time.sleep(0.5)
+                time.sleep(0.2)
             else:
-                status_ok = health['status'] == 'green'
-                name_ok = health['cluster_name'] == self.name
-                size_ok = health['number_of_nodes'] == len(self)
-                if status_ok and name_ok and size_ok:
+                if health['cluster_name'] == self.name:
                     break
         else:  # pragma: nocover
             raise OSError("Couldn't start elasticsearch")

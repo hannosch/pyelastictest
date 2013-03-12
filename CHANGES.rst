@@ -4,6 +4,7 @@ Changelog
 0.4 (unreleased)
 ----------------
 
+- Use `wait_for_*` arguments to `health` call to simplify waiting logic.
 
 0.3 (2013-03-12)
 ----------------
