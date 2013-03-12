@@ -149,12 +149,16 @@ class Node(object):
         """
         if self.running:
             # dump log fies to logging module
+            self.logger.debug('### Begin captured stdout ###')
             self.stdout.seek(0)
             for line in self.stdout.readlines():
                 self.logger.debug(line)
+            self.logger.debug('### End captured stdout ###')
+            self.logger.debug('### Begin captured stderr ###')
             self.stderr.seek(0)
             for line in self.stderr.readlines():
                 self.logger.debug(line)
+            self.logger.debug('### End captured stderr ###')
             try:
                 self.process.terminate()
             except OSError:

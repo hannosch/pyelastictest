@@ -4,6 +4,8 @@ Changelog
 0.3 (unreleased)
 ----------------
 
+- Filter out all log messages during `cluster.wait_until_ready`.
+
 - Issue #5: Redirect subprocess stdout/err to files and log those as debug
   logging messages when a node is stopped.
 

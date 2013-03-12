@@ -1,4 +1,5 @@
 import atexit
+import logging
 import os
 import shutil
 import socket
@@ -13,6 +14,8 @@ from pyelastictest.client import ExtendedClient
 from pyelastictest.node import Node
 
 CLUSTER = None
+PYES_LOGGER = logging.getLogger('pyelasticsearch')
+REQUESTS_LOGGER = logging.getLogger('requests.packages.urllib3.connectionpool')
 
 
 def get_es_path():
@@ -85,6 +88,7 @@ class Cluster(object):
         self.working_path = tempfile.mkdtemp()
         self.nodes = []
         self.client = None
+        self.health_filter = InfoLogFilter()
         # configure cluster ports
         self.configure_ports(size, ports)
 
@@ -125,7 +129,14 @@ class Cluster(object):
             node.start()
 
         self.client = ExtendedClient(self.urls, max_retries=len(self))
-        self.wait_until_ready(timeout)
+        # silence massive log output
+        try:
+            PYES_LOGGER.addFilter(self.health_filter)
+            REQUESTS_LOGGER.addFilter(self.health_filter)
+            self.wait_until_ready(timeout)
+        finally:
+            PYES_LOGGER.removeFilter(self.health_filter)
+            REQUESTS_LOGGER.removeFilter(self.health_filter)
 
     def stop(self):
         """Stop all cluster nodes."""
@@ -170,3 +181,11 @@ class Cluster(object):
         """Return the number of cluster nodes.
         """
         return self.size
+
+
+class InfoLogFilter(logging.Filter):
+
+    def filter(self, record):
+        if record.levelno <= logging.INFO:
+            return False
+        return True
